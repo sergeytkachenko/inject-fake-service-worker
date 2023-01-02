@@ -7,31 +7,35 @@ import fs from 'fs';
 import hoxy from 'hoxy';
 import commandLineArgs from 'command-line-args';
 
+const SERVICE_WORKER_NAME = 'example-fake-service-worker';
+
 const optionDefinitions = [
     { name: 'url', alias: 'u', type: String, defaultOption: 'http://info.cern.ch' },
     { name: 'worker', alias: 'w', type: String, defaultOption: './src/example-fake-service-worker.js' },
 ]
 const options = commandLineArgs(optionDefinitions)
 
-const serviceWorkerName = 'example-fake-service-worker';
+const appUrl = new URL(process.env.APP_URL ?? options.url);
+const workerFile = process.env.WORKER_FILE ?? options.worker;
+
 const proxy = hoxy.createServer().listen(8080);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-let serviceWorkerFile = path.resolve(__dirname, `./${serviceWorkerName}.js`);
-if (options.worker) {
-    serviceWorkerFile = path.resolve(__dirname, options.worker);
-    console.log('serviceWorkerFile', serviceWorkerFile);
+let serviceWorkerFile = path.resolve(__dirname, workerFile);
+if (!fs.existsSync(serviceWorkerFile)) {
+    serviceWorkerFile = path.resolve(process.cwd(), workerFile);
 }
 if (!fs.existsSync(serviceWorkerFile)) {
     console.error(`File not found: ${serviceWorkerFile}`);
     process.exit(0);
 }
+console.log(`serviceWorkerFile: ${serviceWorkerFile}`);
 
 proxy.intercept({
     phase: 'request',
-    url: new RegExp(`${serviceWorkerName}\\.js$`),
+    url: new RegExp(`${SERVICE_WORKER_NAME}\\.js$`),
 }, function(req, resp) {
     resp.headers = { 'Content-Type': 'application/javascript' };
     resp.string = fs.readFileSync(serviceWorkerFile);
@@ -45,7 +49,6 @@ proxy.log('error warn', function(event) {
 });
 
 (async () => {
-    const appUrl = new URL(process.env.APP_URL ?? options.url);
     const domain = `${appUrl.protocol}//${appUrl.hostname}:${appUrl.port}`
 
     const browser = await puppeteer.launch({
@@ -65,7 +68,7 @@ proxy.log('error warn', function(event) {
             .register(serviceWorkerUrl)
             .then(() => console.log("service worker is registered"))
             .catch(console.error);
-    }, domain, serviceWorkerName);
+    }, domain, SERVICE_WORKER_NAME);
     // try {
     //     await page.waitForSelector('#loginEdit-el');
     //     await page.click('#loginEdit-el', { clickCount: 3 })
