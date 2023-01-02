@@ -9,7 +9,7 @@ npm i -g git+https://github.com/sergeytkachenko/inject-fake-service-worker#maste
 ### Open your url in chromium and inject & register your my-service-worker.js file from local path
 
 ```
-injectsw --url=http://tscore-dev-15:81/StudioENU_5097150_0105 --worker=./my-folder/my-service-worker.js
+opensw --url=http://info.cern.ch --worker=./my-service-worker-example.js
 ```
 
 #### Develop

@@ -10,7 +10,7 @@
   "license": "ISC",
   "type": "module",
   "bin": {
-    "injectsw": "./src/index.js"
+    "opensw": "./src/index.js"
   },
   "dependencies": {
     "clone-response": "^2.0.0",
