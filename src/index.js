@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import puppeteer from 'puppeteer';
 import { fileURLToPath } from 'url';
 import { join } from 'path';
@@ -5,7 +6,7 @@ import path from 'path';
 import fs from 'fs';
 import hoxy from 'hoxy';
 
-const workerName = 'inject-fake-worker';
+const serviceWorkerName = 'example-fake-service-worker';
 const proxy = hoxy.createServer().listen(8080);
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,10 +14,10 @@ const __dirname = path.dirname(__filename);
 
 proxy.intercept({
     phase: 'request',
-    url: new RegExp(`${workerName}\\.js$`),
+    url: new RegExp(`${serviceWorkerName}\\.js$`),
 }, function(req, resp) {
     resp.headers = { 'Content-Type': 'application/javascript' };
-    resp.string = fs.readFileSync(path.resolve(__dirname, `./${workerName}.js`));
+    resp.string = fs.readFileSync(path.resolve(__dirname, `./${serviceWorkerName}.js`));
 });
 
 proxy.log('error warn', function(event) {
@@ -42,7 +43,7 @@ proxy.log('error warn', function(event) {
     const page = await browser.newPage();
     await page.goto(process.env.APP_URL);
     await page.evaluate((domain) => {
-        const serviceWorkerUrl = domain + `/${workerName}.js`;
+        const serviceWorkerUrl = domain + `/${serviceWorkerName}.js`;
         navigator.serviceWorker
             .register(serviceWorkerUrl)
             .then(() => console.log("service worker is registered"))
