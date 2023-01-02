@@ -20,7 +20,7 @@ any [service worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Wo
 
 ### Limitation
 
-* Worker with only the http sites (for supporting https need contributors)
+* This util working with only the HTTP sites (for supporting HTTPS need contributors)
 
 #### Develop
 
