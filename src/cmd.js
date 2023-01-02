@@ -26,5 +26,5 @@ import { run } from './index.js';
     }
     console.log(`serviceWorkerFile: ${serviceWorkerFile}`);
     const workerText = fs.readFileSync(serviceWorkerFile);
-    const {page, browser} = await run(appUrl, workerText);
+    const {page, browser} = await run({appUrl, workerText});
 })();

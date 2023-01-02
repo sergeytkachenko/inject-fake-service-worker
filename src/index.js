@@ -3,7 +3,7 @@ import { fileURLToPath } from "url";
 import path, {join} from "path";
 import puppeteer from "puppeteer";
 
-async function run(url, workerText) {
+async function run({url, workerText, headless}) {
     const SERVICE_WORKER_NAME = 'example-fake-service-worker';
     const appUrl = new URL(url);
     const proxy = hoxy.createServer().listen(8080);
@@ -24,7 +24,7 @@ async function run(url, workerText) {
     });
     const domain = `${appUrl.protocol}//${appUrl.hostname}:${appUrl.port}`
     let browser = await puppeteer.launch({
-        headless: false,
+        headless: headless ?? false,
         userDataDir: join(__dirname, '.cache', 'userDataDir'),
         args: [
             '--start-maximized',
