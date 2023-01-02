@@ -43,6 +43,13 @@ async function run(url, workerText) {
             .then(() => console.log("service worker is registered"))
             .catch(console.error);
     }, domain, SERVICE_WORKER_NAME);
+
+    await page.evaluate(async() => {
+        await new Promise(function(resolve) {
+            setTimeout(resolve, 5 * 1000)
+        });
+    });
+
     proxy.close();
     await browser.close();
 
