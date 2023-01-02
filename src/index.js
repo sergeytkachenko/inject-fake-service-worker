@@ -71,21 +71,4 @@ proxy.log('error warn', function(event) {
             .then(() => console.log("service worker is registered"))
             .catch(console.error);
     }, domain, SERVICE_WORKER_NAME);
-    // try {
-    //     await page.waitForSelector('#loginEdit-el');
-    //     await page.click('#loginEdit-el', { clickCount: 3 })
-    //     await page.keyboard.press('Backspace');
-    //     await page.type('#loginEdit-el', 'Supervisor');
-    //     await page.type('#passwordEdit-el', 'Supervisor');
-    //     await page.click('.login-button-login');
-    // } catch (e) {}
-    //
-    // const crtSchemaSelector = 'crt-schema.crt-schema';
-    // await page.waitForSelector(crtSchemaSelector, {timeout: 180 * 1000});
-    //
-    // const sectionSelector = 'usrstkachenko_listpage';
-    // await page.waitForSelector(sectionSelector, {timeout: 180 * 1000});
-    // console.log('SUCCESS');
-    // fs.writeFileSync('./cache.json', JSON.stringify(Object.keys(cache), null, 4))
-    // await browser.close();
 })();
