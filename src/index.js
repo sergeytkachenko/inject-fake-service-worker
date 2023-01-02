@@ -11,7 +11,7 @@ async function run(url, workerText) {
     const __dirname = path.dirname(__filename);
     proxy.intercept({
         phase: 'request',
-        url: new RegExp(`${SERVICE_WORKER_NAME}\\.js$`),
+        url: new RegExp(`${SERVICE_WORKER_NAME}\\.js`),
     }, function(req, resp) {
         resp.headers = { 'Content-Type': 'application/javascript' };
         resp.string = workerText;
@@ -35,22 +35,32 @@ async function run(url, workerText) {
         defaultViewport: null,
     });
     let page = await browser.newPage();
+
     await page.goto(appUrl.href);
+
     await page.evaluate((domain, serviceWorkerName) => {
-        const serviceWorkerUrl = domain + `/${serviceWorkerName}.js`;
-        navigator.serviceWorker
-            .register(serviceWorkerUrl)
-            .then(() => console.log("service worker is registered"))
-            .catch(console.error);
+        navigator.serviceWorker.getRegistrations()
+            .then((registrations) => {
+                for(let registration of registrations) {
+                    const scriptURL = registration?.active?.scriptURL ?? ``;
+                    if (scriptURL.includes(serviceWorkerName)) {
+                        console.log("service worker unregister")
+                        return registration.unregister();
+                    }
+                }
+                return Promise.resolve();
+            }).then(() => {
+            const serviceWorkerUrl = domain + `/${serviceWorkerName}.js`;
+            return navigator.serviceWorker
+                .register(serviceWorkerUrl)
+                .then(() => console.log("service worker is registered"))
+                .catch(console.error);
+        });
     }, domain, SERVICE_WORKER_NAME);
 
-    await page.evaluate(async() => {
-        await new Promise(function(resolve) {
-            setTimeout(resolve, 5 * 1000)
-        });
-    });
+    await page.waitForFunction(swActivate, {timeout: 30 * 1000}, SERVICE_WORKER_NAME);
 
-    proxy.close();
+    await proxy.close();
     await browser.close();
 
     browser = await puppeteer.launch({
@@ -66,10 +76,20 @@ async function run(url, workerText) {
     page = await browser.newPage();
     await page.goto(appUrl.href);
 
-    return {
-        browser,
-        page,
-    };
+    await page.waitForFunction(swActivate, {timeout: 30 * 1000}, SERVICE_WORKER_NAME);
+
+    return {page, browser};
+}
+
+async function swActivate(serviceWorkerName) {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    for(let registration of registrations) {
+        const scriptURL = registration?.active?.scriptURL ?? ``;
+        if (scriptURL.includes(serviceWorkerName)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 export { run };
