@@ -3,7 +3,7 @@
 ### Install global command line tool
 
 ```
-npm i -g git+http://gitlab.tscrm.com/ICore/inject-service-worker-launcher#master
+npm i -g git+https://github.com/sergeytkachenko/inject-fake-service-worker#master
 ```
 
 ### Open your url in chromium and inject & register your my-service-worker.js file from local path
