@@ -55,17 +55,14 @@ proxy.log('error warn', function(event) {
         headless: false,
         userDataDir: join(__dirname, '.cache', 'userDataDir'),
         args: [
+            '--start-maximized',
             '--proxy-server=localhost:8080',
             `--unsafely-treat-insecure-origin-as-secure=${domain}`
         ],
-        devtools: true
+        devtools: true,
+        defaultViewport: null,
     });
     const page = await browser.newPage();
-    await page.setViewport({
-        width: 1800,
-        height: 1000,
-        deviceScaleFactor: 1,
-    });
     await page.goto(appUrl.href);
     await page.evaluate((domain, serviceWorkerName) => {
         const serviceWorkerUrl = domain + `/${serviceWorkerName}.js`;
