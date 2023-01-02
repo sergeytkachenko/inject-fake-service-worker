@@ -1,0 +1,21 @@
+{
+  "name": "creatio-frontend-performance",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "clone-response": "^2.0.0",
+    "esniffer": "^1.0.1",
+    "harmon": "^1.4.4",
+    "hoxy": "^3.3.1",
+    "http-proxy": "^1.18.1",
+    "mitm": "^1.7.2",
+    "puppeteer": "^19.4.1"
+  }
+}
