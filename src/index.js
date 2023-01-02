@@ -61,6 +61,11 @@ proxy.log('error warn', function(event) {
         devtools: true
     });
     const page = await browser.newPage();
+    await page.setViewport({
+        width: 1800,
+        height: 1000,
+        deviceScaleFactor: 1,
+    });
     await page.goto(appUrl.href);
     await page.evaluate((domain, serviceWorkerName) => {
         const serviceWorkerUrl = domain + `/${serviceWorkerName}.js`;
