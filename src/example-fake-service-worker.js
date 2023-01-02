@@ -1,4 +1,4 @@
-const BUILD_NUMBER = new Date().getTime();
+const BUILD_NUMBER = 'v1';
 const CACHE_NAME = `rewrite-creatio-`;
 const getCacheKey = function () {
     return CACHE_NAME + BUILD_NUMBER;
@@ -67,7 +67,12 @@ function proxyResources(event) {
                         .then((response) => {
                             return caches
                                 .open(getCacheKey())
-                                .then((cache) => cache.put(cachedRequest.clone(), response.clone()))
+                                .then((cache) => {
+                                    if (response.ok) {
+                                        return cache.put(cachedRequest.clone(), response.clone());
+                                    }
+                                    return Promise.resolve();
+                                })
                                 .then(() => response)
                                 .catch((err) => console.error(err));
                         })
